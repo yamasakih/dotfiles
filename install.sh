@@ -14,7 +14,16 @@ cd ~/
 ln -fs ~/dotfiles/.gitconfig .
 
 # powerline_shell
-pip install powerline_shell
+if ! command -v pip &> /dev/null; then
+  apt update && apt install -y --no-install-recommends python3-pip
+  pip install pipx
+  pipx ensurepath
+  pipx completions
+  pipx install powerline_shell
+else
+  pip install powerline_shell
+fi
+echo 'export PATH=$PATH:/root/.local/bin' >> ~/.zshrc
 
 # z
 git clone git@github.com:rupa/z.git ~/z
