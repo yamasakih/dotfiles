@@ -16,7 +16,6 @@ ln -fs ~/dotfiles/.gitconfig .
 # powerline_shell
 if ! command -v pip &> /dev/null; then
   apt update && apt install -y pipx
-  pip install pipx
   pipx ensurepath
   pipx completions
   pipx install powerline_shell
@@ -49,6 +48,11 @@ apt update && apt install -y --no-install-recommends locales-all
 # install gh
 gh -version &> /dev/null
 if [ $? -ne 0 ] ; then
+  # install gpg command if not installed
+  gpg --version &> /dev/null
+  if [ $? -ne 0 ] ; then
+    apt update && apt install -y --no-install-recommends gpg-agent
+  fi
   curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --no-tty --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
     && apt update \
