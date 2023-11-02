@@ -16,7 +16,7 @@ ln -fs ~/dotfiles/.gitconfig .
 # powerline_shell
 if ! command -v pip &> /dev/null; then
   apt update && apt install -y pipx
-  pipx install ensurepath completions powerline_shell
+  pipx install ensurepath completions powerline-shell
 else
   pip install powerline_shell
 fi
