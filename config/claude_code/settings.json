@@ -1,0 +1,36 @@
+{
+  "memory": "auto",
+  "editorMode": "vscode",
+  "respectGitignore": true,
+  "detectSecrets": true,
+  "permissions": {
+    "allow": [
+      "Bash",
+      "MultiEdit",
+      "NotebookEdit",
+      "WebFetch",
+      "WebSearch",
+      "mcp__github__create_pull_request",
+      "mcp__github__get_issue",
+      "mcp__github__add_issue_comment",
+      "mcp__github__get_issue_comments"
+    ],
+    "deny": [
+      "Bash(rm:*)",
+      "Bash(rmdir:*)",
+      "Bash(chmod 777:*)",
+      "Bash(chown root:*)",
+      "Bash(while true:*)",
+      "Bash(for ((;;):*)",
+      "Bash(terraform destroy:*)",
+      "Bash(terraform apply:*)",
+      "Bash(gcloud:*)",
+      "Bash(gsutil:*)",
+      "Bash(bq:*)",
+      "Bash(kubectl apply:*)",
+      "Bash(kubectl delete:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push origin main:*)"
+    ]
+  }
+}
