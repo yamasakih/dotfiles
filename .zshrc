@@ -164,26 +164,6 @@ fi
 # Add fzf configuration
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# Add powerline-shell
-function powerline_precmd() {
-    PS1="
-$(powerline-shell --shell zsh $?)
-$ "
-}
-
-function install_powerline_precmd() {
-  for s in "${precmd_functions[@]}"; do
-    if [ "$s" = "powerline_precmd" ]; then
-      return
-    fi
-  done
-  precmd_functions+=(powerline_precmd)
-}
-
-if [ "$TERM" != "linux" ]; then
-    install_powerline_precmd
-fi
-
 # Add Rust configuration
 export PATH="~/.cargo/bin:$PATH"
 
@@ -233,10 +213,6 @@ export PYTEST_ADDOPTS='-v --disable-warnings --ff'
 # }
 # complete -o default -o filenames -o bashdefault -F _luigi_completion python luigi
 
-# Add luigi configuration
-export LUIGI_CONFIG_PARSER=ini
-export LUIGI_CONFIG_PATH=.
-
 # Add ssh-agent configuration
 if ! "${REMOTE_CONTAINERS}" ; then
   ssh-add -K &> /dev/null
@@ -257,3 +233,8 @@ fi
 function gcd() {
   cd `git rev-parse --show-toplevel`
 }
+
+# Add starship setting
+brew install starship
+eval "$(starship init zsh)" >> $HOME/.zshrc
+
