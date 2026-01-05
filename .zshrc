@@ -238,3 +238,6 @@ function gcd() {
 brew install starship
 eval "$(starship init zsh)" >> $HOME/.zshrc
 
+# VM 上での文字入力のずれを防ぐ
+export TERM=xterm-256color
+
