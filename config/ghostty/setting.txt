@@ -84,3 +84,8 @@ desktop-notifications = true
 bell-features = attention,title
 
 keybind = shift+enter=text:\x1b\r
+
+keybind = ctrl+shift+up=resize_split:up,30
+keybind = ctrl+shift+down=resize_split:down,30
+keybind = ctrl+shift+left=resize_split:left,30
+keybind = ctrl+shift+right=resize_split:right,30
