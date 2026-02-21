@@ -213,10 +213,9 @@ export PYTEST_ADDOPTS='-v --disable-warnings --ff'
 # }
 # complete -o default -o filenames -o bashdefault -F _luigi_completion python luigi
 
-# Add ssh-agent configuration
-if ! "${REMOTE_CONTAINERS}" ; then
-  ssh-add -K &> /dev/null
-fi
+# Add luigi configuration
+export LUIGI_CONFIG_PARSER=ini
+export LUIGI_CONFIG_PATH=.
 
 # Add gh completion
 gh -version &> /dev/null
@@ -234,10 +233,11 @@ function gcd() {
   cd `git rev-parse --show-toplevel`
 }
 
-# Add starship setting
-brew install starship
-eval "$(starship init zsh)" >> $HOME/.zshrc
+eval "$(starship init zsh)"
 
-# VM 上での文字入力のずれを防ぐ
-export TERM=xterm-256color
+. "$HOME/.cargo/env"
 
+alias y='yazi'
+export PATH="$HOME/.local/bin:$PATH"
+
+eval "$(git wt --init zsh)"
