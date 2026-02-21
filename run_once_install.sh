@@ -3,9 +3,13 @@ set -euo pipefail
 
 OS="$(uname -s)"
 
-# z - jump around
-if [ ! -d "$HOME/z" ]; then
-  git clone https://github.com/rupa/z.git "$HOME/z"
+# zoxide (smarter cd)
+if ! command -v zoxide &>/dev/null; then
+  if [ "$OS" = "Darwin" ]; then
+    brew install zoxide
+  else
+    curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+  fi
 fi
 
 # git completions for zsh
@@ -30,21 +34,12 @@ if [ ! -d "$HOME/.fzf" ]; then
   yes | "$HOME/.fzf/install"
 fi
 
-# powerline-shell
-if ! command -v powerline-shell &>/dev/null; then
+# bat (cat with syntax highlighting)
+if ! command -v bat &>/dev/null; then
   if [ "$OS" = "Darwin" ]; then
-    pip install powerline-shell
+    brew install bat
   else
-    if command -v pipx &>/dev/null; then
-      pipx install powerline-shell
-      pipx ensurepath
-    elif command -v pip &>/dev/null; then
-      pip install powerline-shell
-    else
-      sudo apt-get update && sudo apt-get install -y pipx
-      pipx install powerline-shell
-      pipx ensurepath
-    fi
+    sudo apt-get update && sudo apt-get install -y bat
   fi
 fi
 
