@@ -43,6 +43,29 @@ if ! command -v bat &>/dev/null; then
   fi
 fi
 
+# starship (cross-shell prompt)
+if ! command -v starship &>/dev/null; then
+  if [ "$OS" = "Darwin" ]; then
+    brew install starship
+  else
+    curl -sS https://starship.rs/install.sh | sh -s -- -y
+  fi
+fi
+
+# yazi (terminal file manager)
+if ! command -v yazi &>/dev/null; then
+  if [ "$OS" = "Darwin" ]; then
+    brew install yazi
+  else
+    cargo install --locked yazi-fm yazi-cli
+  fi
+fi
+
+# keifu (git worktree manager)
+if ! command -v keifu &>/dev/null; then
+  cargo install keifu
+fi
+
 # gh (GitHub CLI)
 if ! command -v gh &>/dev/null; then
   if [ "$OS" = "Darwin" ]; then
