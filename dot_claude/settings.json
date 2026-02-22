@@ -1,8 +1,8 @@
 {
-  "memory": "auto",
-  "editorMode": "vscode",
   "respectGitignore": true,
-  "detectSecrets": true,
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
   "permissions": {
     "allow": [
       "Bash",
@@ -21,7 +21,7 @@
       "Bash(chmod 777:*)",
       "Bash(chown root:*)",
       "Bash(while true:*)",
-      "Bash(for ((;;):*)",
+      "Bash\\(for \\(\\(;;\\):*\\)",
       "Bash(terraform destroy:*)",
       "Bash(terraform apply:*)",
       "Bash(gcloud:*)",
@@ -32,5 +32,19 @@
       "Bash(git push --force:*)",
       "Bash(git push origin main:*)"
     ]
-  }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/scripts/context-bar.sh"
+  },
+  "enabledPlugins": {
+    "security-compliance@claude-code-workflows": true,
+    "security-scanning@claude-code-workflows": true,
+    "tdd-workflows@claude-code-workflows": true,
+    "code-simplifier@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true
+  },
+  "memory": "auto",
+  "editorMode": "vscode",
+  "detectSecrets": true
 }
