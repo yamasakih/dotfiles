@@ -56,14 +56,20 @@ fi
 if ! command -v yazi &>/dev/null; then
   if [ "$OS" = "Darwin" ]; then
     brew install yazi
-  else
+  elif command -v cargo &>/dev/null; then
     cargo install --locked yazi-fm yazi-cli
+  else
+    echo "WARN: cargo not found, skipping yazi installation" >&2
   fi
 fi
 
 # keifu (git worktree manager)
 if ! command -v keifu &>/dev/null; then
-  cargo install keifu
+  if command -v cargo &>/dev/null; then
+    cargo install keifu
+  else
+    echo "WARN: cargo not found, skipping keifu installation" >&2
+  fi
 fi
 
 # gh (GitHub CLI)

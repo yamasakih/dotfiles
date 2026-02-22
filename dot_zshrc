@@ -242,4 +242,4 @@ eval "$(starship init zsh)"
 alias y='yazi'
 export PATH="$HOME/.local/bin:$PATH"
 
-eval "$(git wt --init zsh)"
+command -v git-wt &>/dev/null && eval "$(git wt --init zsh)"
