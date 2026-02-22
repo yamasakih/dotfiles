@@ -83,6 +83,9 @@ window-inherit-working-directory = true
 desktop-notifications = true
 bell-features = attention,title
 
+copy-on-select = clipboard
+shell-integration-features = ssh-terminfo,ssh-env
+
 keybind = shift+enter=text:\x1b\r
 
 # ペインのサイズ変更 (Ctrl + Shift + 矢印)
