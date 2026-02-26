@@ -214,6 +214,35 @@ command -v git-wt &>/dev/null && eval "$(git wt --init zsh)"
 {{ if eq .chezmoi.hostname "HiroyukinoMacBook-Pro" }}
 alias dy='gcloud compute ssh --zone "asia-northeast1-a" "dev-yamasaki" --tunnel-through-iap --project "ai-lab-drawer-ml-dev" --ssh-flag="-A"'
 alias ccc='gcloud compute ssh --zone "asia-northeast1-a" "dev-yamasaki" --tunnel-through-iap --project "ai-lab-drawer-ml-dev" -- -N -R 127.0.0.1:18080:127.0.0.1:18080 &'
-{{ end }}
+gssh-ports() {
+    local instance="dev-yamasaki" # デフォルト値
+    local zone="asia-northeast1-a"
+    local project="ai-lab-drawer-ml-dev"
+    local port_args=()
 
+    # 第1引数が存在し、かつ数字のみではない（文字列である）場合はインスタンス名として扱う
+    if [[ -n "$1" && ! "$1" =~ ^[0-9]+$ ]]; then
+        instance="$1"
+        shift # インスタンス名を引数リストから消して、残りをポート番号として扱う
+    fi
+
+    # 残りの引数が空だった場合のデフォルトポート
+    if [ $# -eq 0 ]; then
+        set -- 8001
+    fi
+
+    # すべての引数に対して -L port:127.0.0.1:port を生成
+    for port in "$@"; do
+        port_args+=("-L" "${port}:127.0.0.1:${port}")
+    done
+
+    echo "Connecting to $instance in $zone with ports: $@..."
+
+    # 配列を展開して実行
+    gcloud compute ssh --zone "$zone" "$instance" \
+        --tunnel-through-iap \
+        --project "$project" \
+        -- -N "${port_args[@]}" &
+}
+{{ end }}
 
