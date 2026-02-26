@@ -210,3 +210,10 @@ alias y='yazi'
 export PATH="$HOME/.local/bin:$PATH"
 
 command -v git-wt &>/dev/null && eval "$(git wt --init zsh)"
+
+{{ if eq .chezmoi.hostname "HiroyukinoMacBook-Pro" }}
+alias dy='gcloud compute ssh --zone "asia-northeast1-a" "dev-yamasaki" --tunnel-through-iap --project "ai-lab-drawer-ml-dev" --ssh-flag="-A"'
+alias ccc='gcloud compute ssh --zone "asia-northeast1-a" "dev-yamasaki" --tunnel-through-iap --project "ai-lab-drawer-ml-dev" -- -N -R 127.0.0.1:18080:127.0.0.1:18080 &'
+{{ end }}
+
+
