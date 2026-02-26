@@ -279,17 +279,17 @@ export ENABLE_TOOL_SEARCH=true
 
 # yazi を y で開く&移動したフォルダに yazi を閉じた後も移動している
 function y() {
-        local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
-        yazi "$@" --cwd-file="$tmp"
-        if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-                builtin cd -- "$cwd"
-        fi
-        rm -f -- "$tmp"
+    local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+    yazi "$@" --cwd-file="$tmp"
+    if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+             builtin cd -- "$cwd"
+    fi
+    rm -f -- "$tmp"
 }
 
 # zoxide
 # ターミナルが対話操作（Interactive）の時だけ cd を上書きする
 if [[ $- == *i* ]]; then
     eval "$(zoxide init zsh --cmd cd)"
-else
+fi
 
