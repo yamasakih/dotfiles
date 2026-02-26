@@ -1,0 +1,101 @@
+# ------------------------------------------------------------------
+# Pastel Powerline Preset (Modified: No Memory Usage & No Lang/Tool Versions)
+# ------------------------------------------------------------------
+
+# 全体のフォーマット設定
+format = """
+$hostname\
+$time\
+[](fg:#FCA17D bg:#33658A)\
+$directory\
+[](fg:#33658A bg:#86BBD8)\
+$cmd_duration\
+[ ](fg:#86BBD8)\
+$shell\
+$shlvl\
+$singularity\
+$kubernetes\
+$vcsh\
+$fossil_branch\
+$git_branch\
+$git_commit\
+$git_state\
+$git_metrics\
+$git_status\
+$hg_branch\
+$pijul_channel\
+$docker_context\
+$env_var\
+$custom\
+$sudo\
+$line_break\
+$jobs\
+$status\
+$container\
+$character"""
+
+# ユーザー名（非表示）
+[username]
+disabled = true
+
+# OSアイコン（非表示）
+[os]
+disabled = true
+
+# ホスト名
+[hostname]
+ssh_only = false
+ssh_symbol = "🌐"
+trim_at = "."
+disabled = false
+{{ if eq .chezmoi.os "darwin" }}
+# Mac (ローカル環境) の色
+format = "[](fg:#4A90E2)[ $ssh_symbol$hostname ](bg:#4A90E2 fg:#ffffff)[](fg:#4A90E2 bg:#FCA17D)"
+{{ else }}
+# Linux / VM 環境の色
+format = "[](fg:#9A348E)[ $ssh_symbol$hostname ](bg:#9A348E fg:#ffffff)[](fg:#9A348E bg:#FCA17D)"
+{{ end }}
+
+# メモリ使用率 (無効化)
+[memory_usage]
+disabled = true
+
+# 時間
+[time]
+format = "[ 🕒 $time ]($style)"
+style = "fg:#191970 bg:#FCA17D"
+use_12hr = false
+time_format = "%T"
+disabled = false
+utc_time_offset = "local"
+
+# バッテリー（非表示）
+[battery]
+disabled = true
+
+# gcloud (無効化)
+[gcloud]
+disabled = true
+
+# ディレクトリ
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+fish_style_pwd_dir_length = 0
+use_logical_path = true
+format = "[ 📁 $path ]($style)[$read_only]($read_only_style)"
+repo_root_format = "[ $before_root_path ]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style)"
+style = "bg:#33658A"
+disabled = false
+read_only = "🔒"
+read_only_style = "red"
+truncation_symbol = ".../"
+home_symbol = "~"
+
+# コマンド実行時間
+[cmd_duration]
+min_time = 2000
+format = "[ 🐢 $duration ]($style)"
+style = "fg:#DA627D bold bg:#86BBD8"
+disabled = false
+

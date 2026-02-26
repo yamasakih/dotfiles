@@ -1,0 +1,75 @@
+{
+  "respectGitignore": true,
+{{ if eq .chezmoi.os "linux" }}
+  "env": {
+    "CLAUDE_CODE_USE_VERTEX": "true",
+    "ANTHROPIC_MODEL": "claude-sonnet-4-6",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-6",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5@20251001",
+    "ANTHROPIC_VERTEX_PROJECT_ID": "caddi-ai-tools-dev",
+    "CLOUD_ML_REGION": "us-east5",
+    "DISABLE_PROMPT_CACHING": "true"
+  },
+{{ else }}
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+{{ end }}
+  "permissions": {
+    "allow": [
+      "Bash",
+      "MultiEdit",
+      "NotebookEdit",
+      "WebFetch",
+      "WebSearch",
+      "mcp__github__create_pull_request",
+      "mcp__github__get_issue",
+      "mcp__github__add_issue_comment",
+      "mcp__github__get_issue_comments"
+    ],
+    "deny": [
+      "Bash(rm:*)",
+      "Bash(rmdir:*)",
+      "Bash(chmod 777:*)",
+      "Bash(chown root:*)",
+      "Bash(while true:*)",
+      "Bash\\(for \\(\\(;;\\):*\\)",
+      "Bash(terraform destroy:*)",
+      "Bash(terraform apply:*)",
+      "Bash(gcloud:*)",
+      "Bash(gsutil:*)",
+      "Bash(bq:*)",
+      "Bash(kubectl apply:*)",
+      "Bash(kubectl delete:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push origin main:*)"
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/scripts/context-bar.sh"
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/context-display.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "security-compliance@claude-code-workflows": true,
+    "security-scanning@claude-code-workflows": true,
+    "tdd-workflows@claude-code-workflows": true,
+    "code-simplifier@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true
+  },
+  "memory": "auto",
+  "detectSecrets": true,
+  "model": "opusplan"
+}

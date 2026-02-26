@@ -1,0 +1,308 @@
+# 少し凝った zshrc
+# License : MIT
+# http://mollifier.mit-license.org/
+
+########################################
+# 環境変数
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# 色を使用出来るようにする
+autoload -Uz colors
+colors
+
+# emacs 風キーバインドにする
+bindkey -e
+
+# ヒストリの設定
+HISTFILE=~/.zsh_history
+HISTSIZE=1000000
+SAVEHIST=1000000
+
+# プロンプト
+# 1行表示
+# PROMPT="%~ %# "
+# 2行表示
+PROMPT="%{${fg[green]}%}[%n@%m]%{${reset_color}%} %~
+%# "
+
+
+# 単語の区切り文字を指定する
+autoload -Uz select-word-style
+select-word-style default
+# ここで指定した文字は単語区切りとみなされる
+# / も区切りと扱うので、^W でディレクトリ１つ分を削除できる
+zstyle ':zle:*' word-chars " /=;@:{},|"
+zstyle ':zle:*' word-style unspecified
+
+# Add fpath
+fpath+=~/.zfunc
+fpath=(~/.zsh/completion $fpath)
+
+########################################
+# 補完
+# 補完機能を有効にする
+autoload bashcompinit && bashcompinit
+autoload -Uz compinit && compinit -i
+compinit
+
+# 補完で小文字でも大文字にマッチさせる
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+
+# ../ の後は今いるディレクトリを補完しない
+zstyle ':completion:*' ignore-parents parent pwd ..
+
+# sudo の後ろでコマンド名を補完する
+zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin \
+                   /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
+
+# オプション
+# 日本語ファイル名を表示可能にする
+setopt print_eight_bit
+
+# beep を無効にする
+setopt no_beep
+
+# フローコントロールを無効にする
+setopt no_flow_control
+
+# Ctrl+Dでzshを終了しない
+setopt ignore_eof
+
+# '#' 以降をコメントとして扱う
+setopt interactive_comments
+
+# ディレクトリ名だけでcdする
+setopt auto_cd
+
+# cd したら自動的にpushdする
+setopt auto_pushd
+# 重複したディレクトリを追加しない
+setopt pushd_ignore_dups
+
+# 同時に起動したzshの間でヒストリを共有する
+setopt share_history
+
+# 同じコマンドをヒストリに残さない
+setopt hist_ignore_all_dups
+
+# スペースから始まるコマンド行はヒストリに残さない
+setopt hist_ignore_space
+
+# ヒストリに保存するときに余分なスペースを削除する
+setopt hist_reduce_blanks
+
+# 高機能なワイルドカード展開を使用する
+setopt extended_glob
+
+########################################
+# キーバインド
+
+# ^R で履歴検索をするときに * でワイルドカードを使用出来るようにする
+bindkey '^R' history-incremental-pattern-search-backward
+
+########################################
+# エイリアス
+
+alias la='ls -a'
+alias ll='ls -l'
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+alias mkdir='mkdir -p'
+
+alias cat='bat'
+
+# sudo の後のコマンドでエイリアスを有効にする
+alias sudo='sudo '
+
+# グローバルエイリアス
+alias -g L='| less'
+alias -g G='| grep'
+
+# C で標準出力をクリップボードにコピーする
+# mollifier delta blog : http://mollifier.hatenablog.com/entry/20100317/p1
+if which pbcopy >/dev/null 2>&1 ; then
+    # Mac
+    alias -g C='| pbcopy'
+elif which xsel >/dev/null 2>&1 ; then
+    # Linux
+    alias -g C='| xsel --input --clipboard'
+elif which putclip >/dev/null 2>&1 ; then
+    # Cygwin
+    alias -g C='| putclip'
+fi
+
+########################################
+# OS 別の設定
+case ${OSTYPE} in
+    darwin*)
+        #Mac用の設定
+        export CLICOLOR=1
+        alias ls='ls -G -F'
+        ;;
+    linux*)
+        #Linux用の設定
+        alias ls='ls -F --color=auto'
+        ;;
+esac
+
+# vim:set ft=zsh:
+
+# Add fzf configuration
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Add gamess gms command
+export PATH="/Applications/gamess:$PATH"
+
+# Add devcontainer configuration
+if [ -z "$SSH_AUTH_SOCK" ]; then
+   # Check for a currently running instance of the agent
+   RUNNING_AGENT="`ps -ax | grep 'ssh-agent -s' | grep -v grep | wc -l | tr -d '[:space:]'`"
+   if [ "$RUNNING_AGENT" = "0" ]; then
+        # Launch a new instance of the agent
+        ssh-agent -s &> $HOME/.ssh/ssh-agent
+   fi
+   eval `cat $HOME/.ssh/ssh-agent`
+fi
+
+# Add bash_completion command configuration
+complete -C '/usr/local/bin/aws_completer' aws
+
+# Add AWS profile
+export AWS_PROFILE=default
+export ACCOUNT_ID=
+export ECR_ADDRESS=${ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com
+
+# Add zsh-autosuggestions
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=5'
+
+# ADD PYTEST_ADDOPTS
+export PYTEST_ADDOPTS='-v --disable-warnings --ff'
+
+# Add luigi configuration
+export LUIGI_CONFIG_PARSER=ini
+export LUIGI_CONFIG_PATH=.
+
+# Add gh completion
+gh -version &> /dev/null
+if [ $? -eq 0 ] ; then
+  eval "$(gh completion -s zsh)"
+fi
+
+# Add path to cargo
+if [ -e ~/.cargo/env ] ; then
+  source ~/.cargo/env
+fi
+
+# Add gcd (cd to git repository root)
+function gcd() {
+  cd `git rev-parse --show-toplevel`
+}
+
+command -v starship &>/dev/null && eval "$(starship init zsh)"
+
+alias y='yazi'
+export PATH="$HOME/.local/bin:$PATH"
+
+{{ if eq .chezmoi.hostname "HiroyukinoMacBook-Pro" }}
+alias dy='gcloud compute ssh --zone "asia-northeast1-a" "dev-yamasaki" --tunnel-through-iap --project "ai-lab-drawer-ml-dev" --ssh-flag="-A"'
+alias ccc='gcloud compute ssh --zone "asia-northeast1-a" "dev-yamasaki" --tunnel-through-iap --project "ai-lab-drawer-ml-dev" -- -N -R 127.0.0.1:18080:127.0.0.1:18080 &'
+gssh-ports() {
+    local instance="dev-yamasaki" # デフォルト値
+    local zone="asia-northeast1-a"
+    local project="ai-lab-drawer-ml-dev"
+    local port_args=()
+
+    # 第1引数が存在し、かつ数字のみではない（文字列である）場合はインスタンス名として扱う
+    if [[ -n "$1" && ! "$1" =~ ^[0-9]+$ ]]; then
+        instance="$1"
+        shift # インスタンス名を引数リストから消して、残りをポート番号として扱う
+    fi
+
+    # 残りの引数が空だった場合のデフォルトポート
+    if [ $# -eq 0 ]; then
+        set -- 8001
+    fi
+
+    # すべての引数に対して -L port:127.0.0.1:port を生成
+    for port in "$@"; do
+        port_args+=("-L" "${port}:127.0.0.1:${port}")
+    done
+
+    echo "Connecting to $instance in $zone with ports: $@..."
+
+    # 配列を展開して実行
+    gcloud compute ssh --zone "$zone" "$instance" \
+        --tunnel-through-iap \
+        --project "$project" \
+        -- -N "${port_args[@]}" &
+}
+# SSH 先で Warning が出ないようにする
+export CLOUDSDK_PYTHON_SITEPACKAGES=1
+{{ end }}
+
+# bun completions
+[ -s "/home/hiroyuki_yamasaki_caddi_jp/.bun/_bun" ] && source "/home/hiroyuki_yamasaki_caddi_jp/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+alias docker-compose='docker compose'
+alias yg='ygrep'
+alias dc='docker compose'
+
+# git-wt
+if command -v git-wt &>/dev/null; then
+    # 現在のディレクトリが Git 管理下にあるかチェック
+    if git rev-parse --is-inside-work-tree &>/dev/null; then
+        eval "$(git wt --init zsh 2>/dev/null)"
+    fi
+    # fzfを使った移動エイリアス
+    alias wjg='cd $(git wt 2>/dev/null | fzf --header-lines=1 | awk "{if (\$1 == \"*\") print \$2; else print \$1}")'
+fi
+
+{{ if eq .chezmoi.os "linux" }}
+# --- 以下の設定は Ubuntu 環境にのみ展開されます ---
+# VM 上での文字のずれを防ぐ
+export TERM=xterm-256color
+
+# Linuxbrew
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+export PATH="$HOME/.local/bin:$PATH"
+
+# CLAUDE CODE
+export ENABLE_EXPERIMENTAL_MCP_CLI=false
+export ENABLE_TOOL_SEARCH=true
+
+# ~/bin/chezmoi に PATH を通す
+export PATH="$HOME/bin:$PATH"
+
+# SSH 上でも動く pbcopy 
+function pbcopy() {
+    local input=$(cat | base64 | tr -d '\n')
+    printf "\033]52;c;%s\007" "$input"
+}
+{{ end }}
+
+# yazi を y で開く&移動したフォルダに yazi を閉じた後も移動している
+function y() {
+    local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+    yazi "$@" --cwd-file="$tmp"
+    if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+             builtin cd -- "$cwd"
+    fi
+    rm -f -- "$tmp"
+}
+
+# zoxide
+# ターミナルが対話操作（Interactive）の時だけ cd を上書きする
+if [[ $- == *i* ]]; then
+    eval "$(zoxide init zsh --cmd cd)"
+fi
+
