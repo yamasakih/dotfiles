@@ -1,49 +1,93 @@
 scriptencoding utf-8
 set encoding=utf-8
 
+" ========================================
+" 1. 現代的な追加機能 (Modern Features)
+" ========================================
+" 24bitフルカラーを有効化
+if has("termguicolors")
+  set termguicolors
+endif
+
+" クリップボード連携 (OSのコピーと同期)
+if has('unnamedplus')
+  set clipboard+=unnamedplus
+endif
+
+" 永続的なUndo履歴 (Vimを閉じても戻せる)
+if has('persistent_undo')
+  let s:undo_dir = expand('~/.vim/undo')
+  if !isdirectory(s:undo_dir)
+    call mkdir(s:undo_dir, 'p')
+  endif
+  let &undodir = s:undo_dir
+  set undofile
+endif
+
+" 補完メニューの挙動最適化
+set completeopt=menuone,noinsert,noselect
+set shortmess+=c
+
+" ========================================
+" 2. 表示・視覚設定
+" ========================================
 if has("syntax")
   syntax on
 endif
 
-set showcmd
-set showmatch
-set ignorecase
-set smartcase
-set incsearch
-set autowrite
-set hidden
-set mouse=a
-set number
-set ruler
-set list
-set matchtime=3
+set number          " 行番号を表示
+set ruler           " カーソル位置を表示
+set list            " 不可視文字を表示
+set showcmd         " 入力中のコマンドを表示
+set showmatch       " 括弧の対応を表示
+set matchtime=3     " 括弧の強調時間
+set wrap            " 長い行を折り返す
+set laststatus=2    " ステータスラインを常に表示
 
-" 対応括弧に'<'と'>'のペアを追加
-set matchpairs& matchpairs+=<:>
-
-" バックスペースでなんでも消せるようにする
-set backspace=indent,eol,start
-set wrap
+" 【修正】80カラムの線を削除し、テキスト幅制限も解除
+set colorcolumn=0
 set textwidth=0
-set colorcolumn=80
 
-" 前時代的スクリーンベルを無効化
+" 【修正】アンダースコア等の誤検知ハイライトを抑制
+let g:markdown_recommended_style = 0
+
+" 不可視文字の見え方
+set listchars=tab:»-,trail:-,extends:»,precedes:«,nbsp:%,eol:↲
+
+" スクリーンベルを無効
 set t_vb=
 set novisualbell
 
-set listchars=tab:»-,trail:-,extends:»,precedes:«,nbsp:%,eol:↲
+" ========================================
+" 3. 検索・動作設定
+" ========================================
+set ignorecase      " 大文字小文字を区別しない
+set smartcase       " 大文字が含まれる場合は区別する
+set incsearch       " インクリメンタルサーチ
+set hlsearch        " 検索結果をハイライト
+set autowrite       " 保存を自動化
+set hidden          " 保存せずにバッファを切り替え可能
+set mouse=a         " マウス操作を有効化
+set backspace=indent,eol,start
 
-" 入力モード中に素早くjjと入力した場合はESCとみなす
+" タブ・インデント設定
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set autoindent
+set smartindent
+
+" 対応括弧に'<'と'>'を追加
+set matchpairs& matchpairs+=<:>
+
+" ========================================
+" 4. キーマッピング (Key Mappings)
+" ========================================
+" 入力モード中に素早くjjでESC
 inoremap jj <Esc>
 
-" 検索結果をハイライトする
-:set hlsearch
-
-" ESCを二回押すことでハイライトを消す
-nmap <silent> <Esc><Esc> :nohlsearch<CR>
-
-" カーソル下の単語を * で検索
-vnoremap <silent> * "vy/\V<C-r>=substitute(escape(@v, '\/'), "\n", '\\n', 'g')<CR><CR>
+" ESC二回でハイライト消去
+nnoremap <silent> <Esc><Esc> :nohlsearch<CR>
 
 " 検索後にジャンプした際に検索単語を画面中央に持ってくる
 nnoremap n nzz
@@ -53,16 +97,15 @@ nnoremap # #zz
 nnoremap g* g*zz
 nnoremap g# g#zz
 
-" j, k による移動を折り返されたテキストでも自然に振る舞うように変更
-nnoremap j gj
-nnoremap k gk
-
-" j, k による移動を折り返されたテキストでも自然に振る舞うように変更
+" 表示行単位での移動（折り返しテキストでも自然に）
 nnoremap j gj
 nnoremap k gk
 
 " vを二回で行末まで選択
 vnoremap v $h
+
+" 選択範囲を * で検索
+vnoremap <silent> * "vy/\V<C-r>=substitute(escape(@v, '\/'), "\n", '\\n', 'g')<CR><CR>
 
 " Ctrl + hjkl でウィンドウ間を移動
 nnoremap <C-h> <C-w>h
@@ -70,8 +113,22 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
-" Tabをスペース４つにする
-:set tabstop=4
-:set autoindent
-:set expandtab
-:set shiftwidth=4
+" ========================================
+" カラースキーム設定
+" ========================================
+" 背景をダークモードに設定
+set background=dark
+
+" カラースキームの選択 (以下から一つ選んで有効にする)
+" Vim 9.0 以降なら habamax が最もおすすめ
+silent! colorscheme habamax
+
+" もし habamax が入っていない環境（古いVim）なら desert を使う
+if !exists('g:colors_name')
+  colorscheme desert
+endif
+
+" Markdown等でアンダースコアがエラー表示(赤)されるのを強制的に無効化
+autocmd FileType * highlight link markdownError Normal
+autocmd FileType * highlight clear Error
+
