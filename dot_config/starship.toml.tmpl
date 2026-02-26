@@ -47,11 +47,14 @@ disabled = true
 ssh_only = false
 ssh_symbol = "🌐"
 trim_at = "."
-detect_env_vars = []
-format = "[](fg:$style)[ $ssh_symbol$hostname ](bg:$style fg:#ffffff)[](fg:$style bg:#FCA17D)"
-style = "#4A90E2"
-ssh_style = "#9A348E"
 disabled = false
+{{ if eq .chezmoi.os "darwin" }}
+# Mac (ローカル環境) の色
+format = "[](fg:#4A90E2)[ $ssh_symbol$hostname ](bg:#4A90E2 fg:#ffffff)[](fg:#4A90E2 bg:#FCA17D)"
+{{ else }}
+# Linux / VM 環境の色
+format = "[](fg:#9A348E)[ $ssh_symbol$hostname ](bg:#9A348E fg:#ffffff)[](fg:#9A348E bg:#FCA17D)"↲
+{{ end }}
 
 # メモリ使用率 (無効化)
 [memory_usage]
