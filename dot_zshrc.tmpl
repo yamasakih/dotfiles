@@ -248,3 +248,48 @@ gssh-ports() {
 export CLOUDSDK_PYTHON_SITEPACKAGES=1
 {{ end }}
 
+# bun completions
+[ -s "/home/hiroyuki_yamasaki_caddi_jp/.bun/_bun" ] && source "/home/hiroyuki_yamasaki_caddi_jp/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+alias docker-compose='docker compose'
+alias yg='ygrep'
+alias dc='docker compose'
+
+# git-wt
+eval "$(git wt --init zsh)"
+alias wjg='cd $(git wt | fzf --header-lines=1 | awk "{if (\$1 == \"*\") print \$2; else print \$1}")'
+
+{{ if eq .chezmoi.os "linux" }}
+# --- 以下の設定は Ubuntu 環境にのみ展開されます ---
+# VM 上での文字のずれを防ぐ
+export TERM=xterm-256color
+
+# Linuxbrew
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+export PATH="$HOME/.local/bin:$PATH"
+
+# CLAUDE CODE
+export ENABLE_EXPERIMENTAL_MCP_CLI=false
+export ENABLE_TOOL_SEARCH=true
+{{ end }}
+
+# yazi を y で開く&移動したフォルダに yazi を閉じた後も移動している
+function y() {
+        local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+        yazi "$@" --cwd-file="$tmp"
+        if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+                builtin cd -- "$cwd"
+        fi
+        rm -f -- "$tmp"
+}
+
+# zoxide
+# ターミナルが対話操作（Interactive）の時だけ cd を上書きする
+if [[ $- == *i* ]]; then
+    eval "$(zoxide init zsh --cmd cd)"
+else
+
