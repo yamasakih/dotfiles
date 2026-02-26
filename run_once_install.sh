@@ -84,3 +84,12 @@ if ! command -v gh &>/dev/null; then
     sudo apt-get update && sudo apt-get install -y gh
   fi
 fi
+
+# git-wt
+if command -v brew >/dev/null 2>&1; then
+    echo "Installing git-wt..."
+    brew install k1LoW/tap/git-wt
+else
+    echo "Homebrew is not installed. Skipping git-wt installation."
+fi
+
