@@ -244,5 +244,7 @@ gssh-ports() {
         --project "$project" \
         -- -N "${port_args[@]}" &
 }
+# SSH 先で Warning が出ないようにする
+export CLOUDSDK_PYTHON_SITEPACKAGES=1
 {{ end }}
 
