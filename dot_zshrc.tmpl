@@ -215,33 +215,53 @@ command -v git-wt &>/dev/null && eval "$(git wt --init zsh)"
 alias dy='gcloud compute ssh --zone "asia-northeast1-a" "dev-yamasaki" --tunnel-through-iap --project "ai-lab-drawer-ml-dev" --ssh-flag="-A"'
 alias ccc='gcloud compute ssh --zone "asia-northeast1-a" "dev-yamasaki" --tunnel-through-iap --project "ai-lab-drawer-ml-dev" -- -N -R 127.0.0.1:18080:127.0.0.1:18080 &'
 gssh-ports() {
-    local instance="dev-yamasaki" # デフォルト値
+    local instance="dev-yamasaki"
     local zone="asia-northeast1-a"
     local project="ai-lab-drawer-ml-dev"
     local port_args=()
 
-    # 第1引数が存在し、かつ数字のみではない（文字列である）場合はインスタンス名として扱う
+    # 第1引数がインスタンス名か判定
     if [[ -n "$1" && ! "$1" =~ ^[0-9]+$ ]]; then
         instance="$1"
-        shift # インスタンス名を引数リストから消して、残りをポート番号として扱う
+        shift
     fi
 
-    # 残りの引数が空だった場合のデフォルトポート
+    # デフォルトポート設定
     if [ $# -eq 0 ]; then
         set -- 8001
     fi
 
-    # すべての引数に対して -L port:127.0.0.1:port を生成
+    # ポート引数の構築
     for port in "$@"; do
         port_args+=("-L" "${port}:127.0.0.1:${port}")
     done
 
-    echo "Connecting to $instance in $zone with ports: $@..."
+    # --- 1. インスタンスの状態確認と起動 ---
+    echo "Checking status of $instance..."
+    # 変数名を vm_status に変更して競合を回避
+    local vm_status=$(gcloud compute instances describe "$instance" \
+        --project "$project" --zone "$zone" \
+        --format='get(status)' 2>/dev/null)
 
-    # 配列を展開して実行
-    gcloud compute ssh --zone "$zone" "$instance" \
-        --tunnel-through-iap \
+    if [ "$vm_status" != "RUNNING" ]; then
+        echo "Instance $instance is currently $vm_status. Starting it now..."
+        gcloud compute instances start "$instance" --project "$project" --zone "$zone"
+    else
+        echo "Instance is already running."
+    fi
+
+    # --- 2. 接続とURLの表示 ---
+    local first_port="$1"
+    echo "---------------------------------------------------"
+    echo "🚀 Connecting to $instance..."
+    echo "🔗 Local URL: http://localhost:$first_port"
+    echo "---------------------------------------------------"
+
+    # SSH接続（バックグラウンド実行）
+    gcloud compute ssh "$instance" \
+        --zone "$zone" \
         --project "$project" \
+        --tunnel-through-iap \
         -- -N "${port_args[@]}" &
 }
 # SSH 先で Warning が出ないようにする
