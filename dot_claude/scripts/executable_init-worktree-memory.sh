@@ -1,52 +1,42 @@
 #!/bin/bash
 # init-worktree-memory.sh
 # 親リポジトリの Claude Code auto-memory を新しく作成された worktree にコピーする
-#
-# Usage: init-worktree-memory.sh <worktree-path>
 
 set -euo pipefail
 
-WORKTREE_PATH="${1:-.}"
-# 絶対パスに変換
-WORKTREE_PATH=$(cd "$WORKTREE_PATH" && pwd)
+# 1. パスの確定 (migrate側と統一)
+RAW_PATH="${1:-.}"
+[ -e "$RAW_PATH" ] || { echo "Error: Path $RAW_PATH does not exist."; exit 1; }
+WORKTREE_PATH=$(realpath "$RAW_PATH")
 
-# .git がファイルかどうか確認 (worktree 判定)
-GIT_FILE="$WORKTREE_PATH/.git"
-if [ ! -f "$GIT_FILE" ]; then
-    echo "Error: $WORKTREE_PATH is not a git worktree." >&2
-    exit 1
-fi
+# 2. 親リポジトリのルートパスを Worktree 構造から取得 (migrate側と統一)
+COMMON_DIR=$(git -C "$WORKTREE_PATH" rev-parse --git-common-dir 2>/dev/null || echo "")
+[ -z "$COMMON_DIR" ] && { echo "Error: Not a git repository or worktree."; exit 1; }
 
-# gitdir パスを取得
-GIT_DIR=$(sed 's/^gitdir: //' "$GIT_FILE" | tr -d '\n')
-
-# commondir ファイルから親 .git ディレクトリを特定
-COMMON_DIR_FILE="$GIT_DIR/commondir"
-if [ ! -f "$COMMON_DIR_FILE" ]; then
-    echo "Error: Could not find commondir. Is this a standalone repo?" >&2
-    exit 1
-fi
-
-COMMON_REL=$(tr -d '\n' < "$COMMON_DIR_FILE")
-
-# 相対パスを絶対パスに変換
-if [[ "$COMMON_REL" == /* ]]; then
-  COMMON_ABS="$COMMON_REL"
+if [[ "$COMMON_DIR" != /* ]]; then
+    PARENT_GIT_DIR=$(realpath "$WORKTREE_PATH/$COMMON_DIR")
 else
-  COMMON_ABS="$(cd "$GIT_DIR" && cd "$COMMON_REL" && pwd)"
+    PARENT_GIT_DIR=$(realpath "$COMMON_DIR")
 fi
+PARENT_ROOT=$(dirname "$PARENT_GIT_DIR")
 
-PARENT_ROOT="$(dirname "$COMMON_ABS")"
+# 同一パス（Worktreeではない場合）はスキップ
+[ "$WORKTREE_PATH" = "$PARENT_ROOT" ] && { echo "Same path as parent. Skipping."; exit 0; }
 
-# パスエンコード関数 (Claude Code の規則: / . _ を - に変換)
-encode_path() { echo "$1" | tr '/._' '-'; }
+# 3. Claude プロジェクト ID 特定関数 (migrate側の get_claude_id ロジックをインライン化)
+encode_path() {
+    local target_path="$1"
+    # Claude の命名規則: 先頭 / を含め、/._ を - に置換
+    echo "$target_path" | sed 's|^/|-|' | tr '/._' '-'
+}
 
-WORKTREE_ENC=$(encode_path "$WORKTREE_PATH")
-PARENT_ENC=$(encode_path "$PARENT_ROOT")
+WT_ID=$(encode_path "$WORKTREE_PATH")
+PARENT_ID=$(encode_path "$PARENT_ROOT")
 
-WORKTREE_MEM_DIR="$HOME/.claude/projects/$WORKTREE_ENC/memory"
-PARENT_MEM_DIR="$HOME/.claude/projects/$PARENT_ENC/memory"
+WORKTREE_MEM_DIR="$HOME/.claude/projects/$WT_ID/memory"
+PARENT_MEM_DIR="$HOME/.claude/projects/$PARENT_ID/memory"
 
+# 4. 実行
 # 親のメモリが存在しない場合は終了
 if [ ! -d "$PARENT_MEM_DIR" ]; then
     echo "No parent memory found at $PARENT_MEM_DIR. Skipping."
@@ -56,15 +46,15 @@ fi
 # Worktree 用のディレクトリを作成
 mkdir -p "$WORKTREE_MEM_DIR"
 
-# MEMORY.md をコピー (既存の場合は上書きせずバックアップするか検討が必要だが、初期化用なので基本コピー)
+# MEMORY.md をコピー
 if [ -f "$PARENT_MEM_DIR/MEMORY.md" ]; then
     cp "$PARENT_MEM_DIR/MEMORY.md" "$WORKTREE_MEM_DIR/MEMORY.md"
-    echo "Inherited MEMORY.md from parent repository."
+    echo "✅ Inherited MEMORY.md from parent: $PARENT_ID"
 fi
 
-# SESSION_HANDOFF.md も必要であればコピー (直近のタスク状況を引き継ぐ場合)
+# SESSION_HANDOFF.md もコピー (作業コンテキストを引き継ぐため)
 if [ -f "$PARENT_MEM_DIR/SESSION_HANDOFF.md" ]; then
     cp "$PARENT_MEM_DIR/SESSION_HANDOFF.md" "$WORKTREE_MEM_DIR/SESSION_HANDOFF.md"
-    echo "Inherited SESSION_HANDOFF.md from parent repository."
+    echo "✅ Inherited SESSION_HANDOFF.md from parent."
 fi
 
