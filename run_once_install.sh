@@ -93,3 +93,6 @@ else
     echo "Homebrew is not installed. Skipping git-wt installation."
 fi
 
+# rtk
+brew install rtk
+
