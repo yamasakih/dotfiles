@@ -62,5 +62,18 @@
 {{ if eq .chezmoi.os "linux" }}
   "autoUpdatesChannel": "stable",
 {{ end }}
-  "model": "opusplan"
+  "model": "opusplan",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/hiroyuki_yamasaki_caddi_jp/.claude/hooks/rtk-rewrite.sh"
+          }
+        ]
+      }
+    ]
+  }
 }
