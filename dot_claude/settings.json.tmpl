@@ -1,6 +1,6 @@
 {
   "respectGitignore": true,
-{{ if eq .chezmoi.os "linux" }}
+{{ if or (eq .chezmoi.os "linux") (eq .chezmoi.hostname "HiroyukinoMacBook-Pro") }}
   "env": {
     "CLAUDE_CODE_USE_VERTEX": "true",
     "ANTHROPIC_MODEL": "claude-sonnet-4-6",
