@@ -1,6 +1,6 @@
 {
   "respectGitignore": true,
-{{ if or (eq .chezmoi.os "linux") (eq .chezmoi.hostname "HiroyukinoMacBook-Pro") }}
+{{- if or (eq .chezmoi.os "linux") (eq .chezmoi.hostname "HiroyukinoMacBook-Pro") }}
   "env": {
     "CLAUDE_CODE_USE_VERTEX": "true",
     "ANTHROPIC_MODEL": "claude-sonnet-4-6",
@@ -10,11 +10,11 @@
     "ANTHROPIC_VERTEX_PROJECT_ID": "caddi-ai-tools-dev",
     "CLOUD_ML_REGION": "us-east5"
   },
-{{ else }}
+{{- else }}
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
-{{ end }}
+{{- end }}
   "permissions": {
     "allow": [
       "Bash",
@@ -58,9 +58,9 @@
   },
   "memory": "auto",
   "detectSecrets": true,
-{{ if or (eq .chezmoi.os "linux") (eq .chezmoi.hostname "HiroyukinoMacBook-Pro") }}
+{{- if or (eq .chezmoi.os "linux") (eq .chezmoi.hostname "HiroyukinoMacBook-Pro") }}
   "autoUpdatesChannel": "stable",
-{{ end }}
+{{- end }}
   "model": "opusplan",
   "hooks": {
     "PreToolUse": [
