@@ -28,7 +28,11 @@
       "mcp__github__get_issue_comments"
 {{- if or (eq .chezmoi.os "linux") (eq .chezmoi.hostname "HiroyukinoMacBook-Pro") }},
       "Read(~/cortex/**)",
-      "Write(~/cortex/**)"
+      "Write(~/cortex/**)",
+      "mcp__snowflake-mcp-workato__cortex_search_slack",
+      "mcp__snowflake-mcp-workato__cortex_search_zra_summaries",
+      "mcp__snowflake-mcp-workato__snowflake_get_schema",
+      "mcp__snowflake-mcp-workato__snowflake_query"
 {{- end }}
     ],
     "deny": [
