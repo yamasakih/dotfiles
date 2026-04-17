@@ -4,7 +4,7 @@
   "env": {
     "CLAUDE_CODE_USE_VERTEX": "true",
     "ANTHROPIC_MODEL": "claude-sonnet-4-6",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-6",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-7",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5@20251001",
     "ANTHROPIC_VERTEX_PROJECT_ID": "caddi-ai-tools-dev",
@@ -65,6 +65,7 @@
     "rust-analyzer-lsp@claude-plugins-official": true
   },
   "memory": "auto",
+  "showClearContextOnPlanAccept": true,
   "detectSecrets": true,
 {{- if or (eq .chezmoi.os "linux") (eq .chezmoi.hostname "HiroyukinoMacBook-Pro") }}
   "autoUpdatesChannel": "stable",
