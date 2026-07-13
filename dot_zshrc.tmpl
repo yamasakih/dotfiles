@@ -8,6 +8,11 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
+export EDITOR=vim
+export VISUAL=vim
+
+export TERM_PROGRAM=ghostty
+
 # 色を使用出来るようにする
 autoload -Uz colors
 colors
@@ -303,11 +308,21 @@ export ENABLE_TOOL_SEARCH=true
 # ~/bin/chezmoi に PATH を通す
 export PATH="$HOME/bin:$PATH"
 
-# SSH 上でも動く pbcopy 
+# SSH 上でも動く pbcopy
 function pbcopy() {
     local input=$(cat | base64 | tr -d '\n')
     printf "\033]52;c;%s\007" "$input"
 }
+
+# just deploy の app/tenant を補完する (orbit-outpost-apps)
+# Homebrew (brew shellenv) が公式の _just 補完を site-functions に入れており、
+# fpath の先頭に置かないと autoload がそちらを優先して読み込んでしまう。
+if [ -d "$HOME/orbit-outpost-apps/scripts/completions" ]; then
+    fpath=("$HOME/orbit-outpost-apps/scripts/completions" $fpath)
+    unfunction _just 2>/dev/null
+    autoload -Uz _just
+    compdef _just just
+fi
 {{ end }}
 
 # yazi を y で開く&移動したフォルダに yazi を閉じた後も移動している
@@ -325,4 +340,6 @@ function y() {
 if [[ $- == *i* ]]; then
     eval "$(zoxide init zsh --cmd cd)"
 fi
+
+alias dbx="databricks"
 
