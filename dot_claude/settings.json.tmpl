@@ -2,13 +2,11 @@
   "respectGitignore": true,
 {{- if or (eq .chezmoi.os "linux") (eq .chezmoi.hostname "HiroyukinoMacBook-Pro") }}
   "env": {
-    "CLAUDE_CODE_USE_VERTEX": "true",
     "ANTHROPIC_MODEL": "claude-sonnet-5",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-6",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5@20251001",
-    "ANTHROPIC_VERTEX_PROJECT_ID": "caddi-ai-tools-dev",
-    "CLOUD_ML_REGION": "us",
+    "VERTEX_REGION_CLAUDE_4_6_OPUS": "us-east5",
     "VERTEX_REGION_CLAUDE_4_6_SONNET": "us-east5",
     "VERTEX_REGION_CLAUDE_HAIKU_4_5": "us-east5",
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
@@ -54,7 +52,20 @@
       "Bash(kubectl apply:*)",
       "Bash(kubectl delete:*)",
       "Bash(git push --force:*)",
-      "Bash(git push origin main:*)"
+      "Bash(git push origin main:*)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(nc *)",
+      "Bash(ncat *)",
+      "Bash(netcat *)",
+      "Bash(socat *)",
+      "Bash(ssh *)",
+      "Bash(scp *)",
+      "Bash(rsync *)",
+      "Bash(sftp *)",
+      "Bash(ftp *)",
+      "Bash(telnet *)",
+      "Bash(nmap *)"
     ]
   },
   "statusLine": {
@@ -77,7 +88,39 @@
   "autoUpdatesChannel": "stable",
 {{- end }}
   "model": "opus",
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true,
+    "allowUnsandboxedCommands": true,
+    "filesystem": {
+      "allowWrite": ["~/.memp", ".git", "/tmp/herdr-team"]
+    },
+    "network": {
+      "allowedDomains": [
+        "github.com",
+        "api.github.com",
+        "*.githubusercontent.com",
+        "pypi.org",
+        "files.pythonhosted.org",
+        "registry.npmjs.org"
+      ],
+      "allowLocalBinding": true
+    },
+    "excludedCommands": ["herdr *", "ygrep *", "rtk *", "gh *", "npm *"]
+  },
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/home/hiroyuki_yamasaki_caddi_jp/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash",
@@ -93,6 +136,10 @@
           {
             "type": "command",
             "command": "/home/hiroyuki_yamasaki_caddi_jp/.claude/hooks/block-main-push.sh"
+          },
+          {
+            "type": "command",
+            "command": "/home/hiroyuki_yamasaki_caddi_jp/.claude/hooks/block-external-send.sh"
           }
         ]
       }
