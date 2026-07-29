@@ -1,0 +1,18 @@
+onboarding = false
+
+[theme]
+name = "tokyo-night"
+
+[ui.sound]
+enabled = true
+
+[ui.toast]
+delivery = "terminal"
+delay_seconds = 1
+
+[keys]
+prefix = "ctrl+x"
+focus_pane_left  = ["prefix+h", "cmd+alt+left"]
+focus_pane_right = ["prefix+l", "cmd+alt+right"]
+focus_pane_up    = ["prefix+k", "cmd+alt+up"]
+focus_pane_down  = ["prefix+j", "cmd+alt+down"]
