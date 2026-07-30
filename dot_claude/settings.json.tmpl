@@ -29,7 +29,7 @@
       "mcp__github__get_issue_comments"
 {{- if or (eq .chezmoi.os "linux") (eq .chezmoi.hostname "HiroyukinoMacBook-Pro") }},
       "Read(~/cortex/**)",
-      "Write(~/cortex/**)",
+      "Edit(~/cortex/**)",
       "Read(~/.memp/**)",
       "mcp__snowflake-mcp-workato__cortex_search_slack",
       "mcp__snowflake-mcp-workato__cortex_search_zra_summaries",
@@ -71,6 +71,14 @@
   "statusLine": {
     "type": "command",
     "command": "~/.claude/scripts/context-bar.sh"
+  },
+  "extraKnownMarketplaces": {
+    "caddi-ai-tooling": {
+      "source": {
+        "source": "github",
+        "repo": "caddi-sandbox/ai-tooling"
+      }
+    }
   },
   "enabledPlugins": {
     "code-simplifier@claude-plugins-official": true,
