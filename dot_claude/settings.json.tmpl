@@ -5,10 +5,7 @@
     "ANTHROPIC_MODEL": "claude-sonnet-5",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-6",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5@20251001",
-    "VERTEX_REGION_CLAUDE_4_6_OPUS": "us-east5",
-    "VERTEX_REGION_CLAUDE_4_6_SONNET": "us-east5",
-    "VERTEX_REGION_CLAUDE_HAIKU_4_5": "us-east5",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5",
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
 {{- else }}
@@ -19,8 +16,6 @@
   "permissions": {
     "allow": [
       "Bash",
-      "MultiEdit",
-      "NotebookEdit",
       "WebFetch",
       "WebSearch",
       "mcp__github__create_pull_request",
@@ -38,22 +33,8 @@
 {{- end }}
     ],
     "deny": [
-      "Bash(rm:*)",
-      "Bash(rmdir:*)",
-      "Bash(chmod 777:*)",
-      "Bash(chown root:*)",
-      "Bash(while true:*)",
-      "Bash\\(for \\(\\(;;\\):*\\)",
-      "Bash(terraform destroy:*)",
-      "Bash(terraform apply:*)",
-      "Bash(gcloud:*)",
-      "Bash(gsutil:*)",
-      "Bash(bq:*)",
       "Bash(kubectl apply:*)",
       "Bash(kubectl delete:*)",
-      "Bash(git push --force:*)",
-      "Bash(git push origin main:*)",
-      "Bash(curl *)",
       "Bash(wget *)",
       "Bash(nc *)",
       "Bash(ncat *)",
@@ -65,9 +46,26 @@
       "Bash(sftp *)",
       "Bash(ftp *)",
       "Bash(telnet *)",
-      "Bash(nmap *)"
-    ]
+      "Bash(nmap *)",
+      "Bash(sudo*)",
+      "Read(.env)",
+      "Read(~/.ssh)"
+    ],
+    "ask": [
+      "Bash(git push*)",
+      "Bash(rm*)",
+      "Bash(rmdir*)",
+      "Bash(gh*)",
+      "Bash(terraform destory*)",
+      "Bash(terraform apply*)",
+      "Bash(gcloud:*)",
+      "Bash(gsutil:*)",
+      "Bash(curl*)",
+      "Bash(bg:*)"
+    ],
+    "disableBypassPermissinosMode": "disable",
   },
+  "defaultMode": "auto",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/scripts/context-bar.sh"
@@ -101,7 +99,7 @@
     "autoAllowBashIfSandboxed": true,
     "allowUnsandboxedCommands": true,
     "filesystem": {
-      "allowWrite": ["~/.memp", ".git", "~/.agents/skills/agmsg/db"]
+      "allowWrite": ["~/.memp", ".git", "~/.agents/skills/agmsg/db", "~/.agents/skills/agmsg/run", "~/.agents/skills/agmsg/teams"]
     },
     "network": {
       "allowedDomains": [
@@ -129,6 +127,7 @@
         ]
       }
     ],
+{{- if or (eq .chezmoi.os "linux") (eq .chezmoi.hostname "HiroyukinoMacBook-Pro") }}
     "PreToolUse": [
       {
         "matcher": "Bash",
@@ -152,5 +151,6 @@
         ]
       }
     ]
+{{- end }}
   }
 }
